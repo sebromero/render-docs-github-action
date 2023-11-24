@@ -31,35 +31,38 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
+    - name: Cache Node modules
+      id: cache-node-modules
+      uses: actions/cache@v2
+      with:
+        path: |
+          node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-modules-
+
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 14
 
-    - name: Cache Doxygen
-      id: cache-doxygen
+    - name: Install render-docs
+      run: npm install sebromero/render-docs
+      if: steps.cache-node-modules.outputs.cache-hit != 'true'
+
+    - name: Cache render-docs
+      id: cache-render-docs
       uses: actions/cache@v2
       with:
         path: |
-          ~/.doxygen
-        key: ${{ runner.os }}-doxygen-${{ hashFiles('**/Doxyfile.in') }}
+          node_modules/render-docs
+        key: ${{ runner.os }}-render-docs-${{ hashFiles('node_modules/render-docs/package.json') }}
         restore-keys: |
-          ${{ runner.os }}-doxygen-
-
-    - name: Install Doxygen
-      run: |
-        if [ ! -x ~/.doxygen/bin/doxygen ]; then
-          # Download and install Doxygen
-          wget -O doxygen.tar.gz https://doxygen.nl/files/doxygen-<version>.linux.bin.tar.gz
-          tar -xzvf doxygen.tar.gz -C ~/.doxygen --strip-components=1
-          rm doxygen.tar.gz
-        fi
-
-    - name: Install Dependencies
-      run: npm install
+          ${{ runner.os }}-render-docs-
 
     - name: Run Docs Generation
-      run: npm run render-docs -- ${{ inputs.source-path }} ${{ inputs.target-path }} ${{ inputs.exclude-pattern ? '-e ' + inputs.exclude-pattern : '' }} ${{ inputs.include-cpp ? '-c' : '' }}
+      run: npx render-docs -- ${{ inputs.source-path }} ${{ inputs.target-path }} ${{ inputs.exclude-pattern ? '-e ' + inputs.exclude-pattern : '' }} ${{ inputs.include-cpp ? '-c' : '' }}
+      if: steps.cache-render-docs.outputs.cache-hit != 'true'
 
     - name: Commit Docs
       if: inputs.commit
