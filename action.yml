@@ -1,0 +1,71 @@
+name: 'Generate and Commit Docs'
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    inputs:
+      source-path:
+        description: 'Source path containing the .h files'
+        required: true
+      target-path:
+        description: 'Target path or file for the markdown documentation'
+        required: true
+      exclude-pattern:
+        description: 'Pattern for excluding files (e.g. "*/test/*")'
+      include-cpp:
+        description: 'Include .cpp files'
+      commit:
+        description: 'Boolean flag to indicate whether to commit changes'
+        default: false
+      commit-message:
+        description: 'Commit message'
+        default: 'Update documentation'
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 14
+
+    - name: Cache Doxygen
+      id: cache-doxygen
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.doxygen
+        key: ${{ runner.os }}-doxygen-${{ hashFiles('**/Doxyfile.in') }}
+        restore-keys: |
+          ${{ runner.os }}-doxygen-
+
+    - name: Install Doxygen
+      run: |
+        if [ ! -x ~/.doxygen/bin/doxygen ]; then
+          # Download and install Doxygen
+          wget -O doxygen.tar.gz https://doxygen.nl/files/doxygen-<version>.linux.bin.tar.gz
+          tar -xzvf doxygen.tar.gz -C ~/.doxygen --strip-components=1
+          rm doxygen.tar.gz
+        fi
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Run Docs Generation
+      run: npm run render-docs -- ${{ inputs.source-path }} ${{ inputs.target-path }} ${{ inputs.exclude-pattern ? '-e ' + inputs.exclude-pattern : '' }} ${{ inputs.include-cpp ? '-c' : '' }}
+
+    - name: Commit Docs
+      if: inputs.commit
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        git add -A
+        git commit -m "${{ inputs.commit-message }}"
+        git push
