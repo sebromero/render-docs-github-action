@@ -20,6 +20,9 @@ jobs:
         description: 'Pattern for excluding files (e.g. "*/test/*")'
       include-cpp:
         description: 'Include .cpp files'
+      fail-on-warnings:
+        description: 'Fail when documentation warnings are issued.'
+        default: false
       commit:
         description: 'Boolean flag to indicate whether to commit changes'
         default: false
@@ -31,38 +34,26 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Cache Node modules
-      id: cache-node-modules
-      uses: actions/cache@v2
-      with:
-        path: |
-          node_modules
-        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-modules-
-
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 14
+        node-version: 16
 
     - name: Install render-docs
-      run: npm install sebromero/render-docs
-      if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      run: npm install github:sebromero/render-docs --no-save --silent
 
-    - name: Cache render-docs
-      id: cache-render-docs
+    - name: Run Docs Generation
+      run: npx render-docs -- ${{ inputs.source-path }} ${{ inputs.target-path }} ${{ inputs.exclude-pattern ? '-e ' + inputs.exclude-pattern : '' }} ${{ inputs.include-cpp ? '-c' : '' }} ${{ inputs.fail-on-warnings ? '--fail-on-warnings' : '' }}
+
+    - name: Cache Doxygen binaries
+      id: cache-doxygen-binaries
       uses: actions/cache@v2
       with:
         path: |
-          node_modules/render-docs
-        key: ${{ runner.os }}-render-docs-${{ hashFiles('node_modules/render-docs/package.json') }}
+          node_modules/doxygen/dist
+        key: ${{ runner.os }}-doxygen-binaries-${{ hashFiles('node_modules/doxygen/dist/*/doxygen') }}
         restore-keys: |
-          ${{ runner.os }}-render-docs-
-
-    - name: Run Docs Generation
-      run: npx render-docs -- ${{ inputs.source-path }} ${{ inputs.target-path }} ${{ inputs.exclude-pattern ? '-e ' + inputs.exclude-pattern : '' }} ${{ inputs.include-cpp ? '-c' : '' }}
-      if: steps.cache-render-docs.outputs.cache-hit != 'true'
+          ${{ runner.os }}-doxygen-binaries-
 
     - name: Commit Docs
       if: inputs.commit
