@@ -1,0 +1,59 @@
+name: 'Generate and Commit Docs'
+
+inputs:
+  source-path:
+    description: 'Source path containing the .h files'
+    required: true
+  target-path:
+    description: 'Target path or file for the markdown documentation'
+    required: true
+  exclude-pattern:
+    description: 'Pattern for excluding files (e.g. "*/test/*")'
+  include-cpp:
+    description: 'Include .cpp files'
+    default: false
+  fail-on-warnings:
+    description: 'Fail when documentation warnings are issued.'
+    default: false
+  commit:
+    description: 'Boolean flag to indicate whether to commit changes'
+    default: false
+  commit-message:
+    description: 'Commit message'
+    default: 'Update documentation'
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 16
+
+    - name: Install render-docs
+      run: npm install github:sebromero/render-docs --no-save --silent
+
+    - name: Run Docs Generation
+      run: |
+        npx render-docs 
+
+    - name: Cache Doxygen binaries
+      id: cache-doxygen-binaries
+      uses: actions/cache@v2
+      with:
+        path: |
+          node_modules/doxygen/dist
+        key: ${{ runner.os }}-doxygen-binaries-${{ hashFiles('node_modules/doxygen/dist/*/doxygen') }}
+        restore-keys: |
+          ${{ runner.os }}-doxygen-binaries-
+
+    - name: Commit Docs
+      if: inputs.commit
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        git add -A
+        git commit -m "${{ inputs.commit-message }}"
+        git push
