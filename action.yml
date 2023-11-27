@@ -44,7 +44,13 @@ jobs:
       run: npm install github:sebromero/render-docs --no-save --silent
 
     - name: Run Docs Generation
-      run: npx render-docs -- ${{ inputs.source-path }} ${{ inputs.target-path }} ${{ inputs.exclude-pattern ? '-e ' + inputs.exclude-pattern : '' }} ${{ inputs.include-cpp ? '-c' : '' }} ${{ inputs.fail-on-warnings ? '--fail-on-warnings' : '' }}
+      run: |
+        npx render-docs \
+          -- ${{ inputs.source-path }} \
+          ${{ inputs.target-path }} \
+          ${{ inputs.exclude-pattern ? '-e ' + inputs.exclude-pattern : '' }} \
+          ${{ inputs.include-cpp ? '-c' : '' }} \
+          ${{ inputs.fail-on-warnings ? '--fail-on-warnings' : '' }}
 
     - name: Cache Doxygen binaries
       id: cache-doxygen-binaries
