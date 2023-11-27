@@ -20,6 +20,7 @@ jobs:
         description: 'Pattern for excluding files (e.g. "*/test/*")'
       include-cpp:
         description: 'Include .cpp files'
+        default: false
       fail-on-warnings:
         description: 'Fail when documentation warnings are issued.'
         default: false
