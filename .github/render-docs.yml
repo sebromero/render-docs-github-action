@@ -1,14 +1,7 @@
 name: 'Generate and Commit Docs'
 
 on:
-  push:
-    branches:
-      - main
-
-jobs:
-  generate-docs:
-    runs-on: ubuntu-latest
-
+  workflow_call:
     inputs:
       source-path:
         description: 'Source path containing the .h files'
@@ -30,6 +23,11 @@ jobs:
       commit-message:
         description: 'Commit message'
         default: 'Update documentation'
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
 
     steps:
     - name: Checkout Repository
