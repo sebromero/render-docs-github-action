@@ -22,38 +22,42 @@ inputs:
     description: 'Commit message'
     default: 'Update documentation'
 
-jobs:
-  generate-docs:
-    runs-on: ubuntu-latest
+runs:
+  using: "composite"
 
-    steps:
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 16
+  steps:
+  - name: Set up Node.js
+    uses: actions/setup-node@v4
+    with:
+      node-version: 16
 
-    - name: Install render-docs
-      run: npm install github:sebromero/render-docs --no-save --silent
+  - name: Install render-docs
+    run: npm install github:sebromero/render-docs --no-save --silent
 
-    - name: Run Docs Generation
-      run: |
-        npx render-docs 
+  - name: Run Docs Generation
+    run: |
+      npx render-docs \
+        -- ${{ inputs.source-path }} \
+        ${{ inputs.target-path }} \
+        ${{ inputs.exclude-pattern ? '-e ' + inputs.exclude-pattern : '' }} \
+        ${{ inputs.include-cpp ? '-c' : '' }} \
+        ${{ inputs.fail-on-warnings ? '--fail-on-warnings' : '' }}
 
-    - name: Cache Doxygen binaries
-      id: cache-doxygen-binaries
-      uses: actions/cache@v2
-      with:
-        path: |
-          node_modules/doxygen/dist
-        key: ${{ runner.os }}-doxygen-binaries-${{ hashFiles('node_modules/doxygen/dist/*/doxygen') }}
-        restore-keys: |
-          ${{ runner.os }}-doxygen-binaries-
+  - name: Cache Doxygen binaries
+    id: cache-doxygen-binaries
+    uses: actions/cache@v2
+    with:
+      path: |
+        node_modules/doxygen/dist
+      key: ${{ runner.os }}-doxygen-binaries-${{ hashFiles('node_modules/doxygen/dist/*/doxygen') }}
+      restore-keys: |
+        ${{ runner.os }}-doxygen-binaries-
 
-    - name: Commit Docs
-      if: inputs.commit
-      run: |
-        git config --global user.email "action@github.com"
-        git config --global user.name "GitHub Action"
-        git add -A
-        git commit -m "${{ inputs.commit-message }}"
-        git push
+  - name: Commit Docs
+    if: inputs.commit
+    run: |
+      git config --global user.email "action@github.com"
+      git config --global user.name "GitHub Action"
+      git add -A
+      git commit -m "${{ inputs.commit-message }}"
+      git push
