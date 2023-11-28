@@ -55,7 +55,7 @@ runs:
 
   - name: Cache Doxygen binaries
     id: cache-doxygen-binaries
-    uses: actions/cache@v2
+    uses: actions/cache@v3
     with:
       path: |
         node_modules/doxygen/dist
