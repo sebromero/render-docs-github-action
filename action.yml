@@ -70,7 +70,7 @@ runs:
       npx render-docs \
         -- ${{ inputs.source-path }} \
         ${{ inputs.target-path }} \
-        ${{ inputs.exclude-pattern && '-e ' || '' }}${{ inputs.exclude-pattern }} \
+        ${{ inputs.exclude-pattern && format('-e {0}', inputs.exclude-pattern) || '' }} \
         ${{ inputs.include-cpp && '-c' || '' }} \
         ${{ inputs.fail-on-warnings && '--fail-on-warnings' || '' }} \
         ${{ inputs.debug && '-d' || '' }}
