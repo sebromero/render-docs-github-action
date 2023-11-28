@@ -25,6 +25,9 @@ inputs:
     description: 'Enable debugging mode to provide additional output'
     default: false
 
+permissions:
+  contents: write
+
 runs:
   using: "composite"
 
