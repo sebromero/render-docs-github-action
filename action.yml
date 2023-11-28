@@ -51,7 +51,7 @@ runs:
       sudo apt-get -qq update
 
       # Install libclang and other necessary packages
-      sudo apt-get -qq install -y -o Dpkg::Progress-Fancy=0 -o=Dpkg::Use-Pty=0 libclang1-9 libclang-cpp9
+      sudo apt-get -qq install -y -o Dpkg::Progress-Fancy=0 -o=Dpkg::Use-Pty=0 libclang1-9 libclang-cpp9 > /dev/null
 
 
   - name: Cache Doxygen binaries (Restore)
