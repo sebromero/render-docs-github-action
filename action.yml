@@ -29,11 +29,6 @@ runs:
   using: "composite"
 
   steps:
-  - name: Set up Node.js
-    uses: actions/setup-node@v4
-    with:
-      node-version: 16
-
   - name: Install doxygen dependencies
     shell: bash
     run: |
@@ -49,21 +44,22 @@ runs:
       # Install libclang and other necessary packages
       sudo apt-get -qq install -y libclang1-9 libclang-cpp9 > /dev/null
 
+  - name: Set up Node.js
+    uses: actions/setup-node@v4
+    with:
+      node-version: 16
+      
   - name: Install render-docs
-  shell: bash
-  run: npm install github:sebromero/render-docs --no-save --silent
+    shell: bash
+    run: npm install github:sebromero/render-docs --no-save --silent
 
   - name: Cache Doxygen binaries
-  id: cache-doxygen-binaries
-  uses: actions/cache@v2
-  with:
-    path: |
-      node_modules/doxygen/dist
-    key: ${{ runner.os }}-doxygen-binaries-${{ hashFiles('node_modules/doxygen/lib/constants.js') }}
-
-  - name: Download Doxygen
-    if: steps.cache-doxygen-binaries.outputs.cache-hit != 'true'
-      run: echo "Doxygen should be downloaded."
+    id: cache-doxygen-binaries
+    uses: actions/cache@v2
+    with:
+      path: |
+        node_modules/doxygen/dist
+      key: ${{ runner.os }}-doxygen-binaries-${{ hashFiles('node_modules/doxygen/lib/constants.js') }}
 
   - name: Run Docs Generation
     shell: bash
