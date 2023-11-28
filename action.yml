@@ -41,9 +41,16 @@ runs:
   - name: Install doxygen dependencies
     shell: bash
     run: |
-      sudo wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-      sudo sh -c 'echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-9 main" >> /etc/apt/sources.list.d/llvm.list'
+      # Import LLVM GPG key without using apt-key
+      wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /usr/share/keyrings/llvm-archive-keyring.gpg
+
+      # Add the LLVM repository with the GPG keyring
+      echo "deb [signed-by=/usr/share/keyrings/llvm-archive-keyring.gpg] http://apt.llvm.org/focal/ llvm-toolchain-focal-9 main" | sudo tee /etc/apt/sources.list.d/llvm.list > /dev/null
+      
+      # Update the package lists
       sudo apt-get -qq update
+
+      # Install libclang and other necessary packages
       sudo apt-get -qq install -y libclang1-9 libclang-cpp9
 
 
