@@ -70,6 +70,11 @@ runs:
     run: |
       git config --global user.email "action@github.com"
       git config --global user.name "GitHub Action"
-      git add -A
+      TARGET_PATH=${{ inputs.target-path }}
+      if [ -d "$TARGET_PATH" ]; then
+        git add "$TARGET_PATH/*"
+      elif [ -f "$TARGET_PATH" ]; then
+        git add "$TARGET_PATH"
+      fi
       git commit -m "${{ inputs.commit-message }}"
       git push
