@@ -54,6 +54,16 @@ runs:
       sudo apt-get -qq install -y -o=Dpkg::Use-Pty=0 libclang1-9 libclang-cpp9
 
 
+  - name: Cache Doxygen binaries (Restore)
+    id: cache-doxygen-binaries-restore
+    uses: actions/cache@v2
+    with:
+      path: |
+        node_modules/doxygen/dist
+      key: ${{ runner.os }}-doxygen-binaries-${{ hashFiles('node_modules/doxygen/dist/*/doxygen') }}
+      restore-keys: |
+        ${{ runner.os }}-doxygen-binaries-
+
   - name: Run Docs Generation
     shell: bash
     run: |
@@ -65,8 +75,8 @@ runs:
         ${{ inputs.fail-on-warnings && '--fail-on-warnings' || '' }} \
         ${{ inputs.debug && '-d' || '' }}
 
-  - name: Cache Doxygen binaries
-    id: cache-doxygen-binaries
+  - name: Cache Doxygen binaries (Save)
+    id: cache-doxygen-binaries-save
     uses: actions/cache@v2
     with:
       path: |
