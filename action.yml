@@ -17,7 +17,7 @@ inputs:
     default: false
   commit:
     description: 'Boolean flag to indicate whether to commit changes'
-    default: false
+    default: true
   commit-message:
     description: 'Commit message'
     default: 'Update documentation'
