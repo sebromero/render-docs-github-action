@@ -61,6 +61,11 @@ runs:
         node_modules/doxygen/dist
       key: ${{ runner.os }}-doxygen-binaries-${{ hashFiles('node_modules/doxygen/lib/constants.js') }}
 
+  - name: Download Doxygen
+    shell: bash
+    run: echo "Doxygen should be downloaded."
+    if: steps.cache-doxygen-binaries.outputs.cache-hit != 'true'
+
   - name: Run Docs Generation
     shell: bash
     run: |
