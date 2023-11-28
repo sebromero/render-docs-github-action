@@ -80,14 +80,9 @@ runs:
   - name: Commit Docs
     shell: bash
     if: inputs.commit
-    run: |
-      git config --global user.email "action@github.com"
-      git config --global user.name "GitHub Action"
-      TARGET_PATH=${{ inputs.target-path }}
-      if [ -d "$TARGET_PATH" ]; then
-        git add "$TARGET_PATH/*"
-      elif [ -f "$TARGET_PATH" ]; then
-        git add "$TARGET_PATH"
-      fi
-      git commit -m "${{ inputs.commit-message }}"
-      git push
+    uses: EndBug/add-and-commit@v9
+      with:
+        add: "${{ inputs.target-path }}"
+        author_name: "GitHub Action"
+        author_email: "action@github.com"
+        message: "${{ inputs.commit-message }}"      
