@@ -21,6 +21,9 @@ inputs:
   commit-message:
     description: 'Commit message'
     default: 'Update documentation'
+  debug:
+    description: 'Enable debugging mode to provide additional output'
+    default: false
 
 runs:
   using: "composite"
@@ -52,7 +55,8 @@ runs:
         ${{ inputs.target-path }} \
         ${{ inputs.exclude-pattern && '-e ' || '' }}${{ inputs.exclude-pattern }} \
         ${{ inputs.include-cpp && '-c' || '' }} \
-        ${{ inputs.fail-on-warnings && '--fail-on-warnings' || '' }}
+        ${{ inputs.fail-on-warnings && '--fail-on-warnings' || '' }} \
+        ${{ inputs.debug && '-d' || '' }}
 
   - name: Cache Doxygen binaries
     id: cache-doxygen-binaries
