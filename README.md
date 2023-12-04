@@ -59,7 +59,7 @@ The workflow has a couple of inputs that allows to configure the behaviour:
 - `exclude-pattern` Use this when certain files or folder inside the source folder should not be processed.
 - `include-cpp` It's good practice to do the class and function declarations in the .h file and thus also add the documentation there. However, if you happen to have code documentation also in .cpp files enabling this option will process those files too.
 - `access-level` Allows to specify which class members to filter out in the documentation. If you specify `private` all members will show up in the documentation. If you set it to `protected` only the private members will be filtered out. When set to `public` only public members will be processed.
-- `fail-on-warnings` The command will print out missing code documentation and issues in existing documentation. This allows to achieve 100% documentation coverage.
+- `fail-on-warnings` The command prints documentation issues such as missing documentation. This option makes the action fail when such issues are found. This allows to achieve 100% documentation coverage.
 - `commit` Defines whether the rendered markdown files should be committed to the repository automatically.
 - `commit-message` Defines the commit message to be used when `commit` is set to true.
 - `debug` Enable this option to get additional output from the tool. This allows to debug in case you get unexpected output from the command.
