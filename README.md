@@ -18,11 +18,15 @@ name: Render Documentation
 
 on:
   push:
+    branches:
+      - main
     paths:
       - ".github/workflows/render-documentation.ya?ml"
       - "examples/**"
       - "src/**"
   pull_request:
+    branches:
+      - main
     paths:
       - ".github/workflows/render-documentation.ya?ml"
       - "examples/**"
