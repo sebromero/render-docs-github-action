@@ -68,7 +68,7 @@ runs:
     shell: bash
     run: |
       npx render-docs \
-        -- ${{ inputs.source-path }} \
+        ${{ inputs.source-path }} \
         ${{ inputs.target-path }} \
         ${{ inputs.exclude-pattern && format('-e {0}', inputs.exclude-pattern) || '' }} \
         ${{ inputs.include-cpp && '-c' || '' }} \
