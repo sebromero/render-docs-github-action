@@ -12,24 +12,29 @@ inputs:
   include-cpp:
     description: 'Include .cpp files'
     default: false
+    type: boolean
   access-level:
     description: 'The minimum access level to be considered in the documentation'
     default: 'public'
   show-access-modifiers:
     description: 'Show access modifiers in the documentation'
     default: false
+    type: boolean
   fail-on-warnings:
     description: 'Fail when documentation warnings are issued.'
     default: false
+    type: boolean
   commit:
     description: 'Boolean flag to indicate whether to commit changes'
     default: true
+    type: boolean
   commit-message:
     description: 'Commit message'
     default: 'Update documentation'
   debug:
     description: 'Enable debugging mode to provide additional output'
     default: false
+    type: boolean
 
 runs:
   using: "composite"
