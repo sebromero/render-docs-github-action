@@ -70,12 +70,12 @@ runs:
       npx render-docs \
         ${{ inputs.source-path }} \
         ${{ inputs.target-path }} \
-        ${{ inputs.exclude-pattern && format('-e {0}', inputs.exclude-pattern) || '' }} \
-        ${{ inputs.include-cpp && '-c' || '' }} \
-        ${{ inputs.show-access-modifiers && '-s' || '' }} \
-        ${{ inputs.access-level && format('-a {0}', inputs.access-level) || '' }} \
-        ${{ inputs.fail-on-warnings && '--fail-on-warnings' || '' }} \
-        ${{ inputs.debug && '-d' || '' }}
+        ${{ inputs.exclude-pattern && format('--exclude {0}', inputs.exclude-pattern) || '' }} \
+        ${{ inputs.include-cpp == true && '--include-cpp' || '' }} \
+        ${{ inputs.show-access-modifiers == true && '--show-access-modifiers' || '' }} \
+        ${{ inputs.access-level && format('--access-level {0}', inputs.access-level) || '' }} \
+        ${{ inputs.fail-on-warnings == true && '--fail-on-warnings' || '' }} \
+        ${{ inputs.debug == true && '--debug ' || '' }}
 
   - name: Commit Docs
     if: inputs.commit
