@@ -1,0 +1,105 @@
+name: 'Generate and Commit Docs'
+
+on:
+  workflow_call:
+    inputs:
+      source-path:
+        description: 'Source path containing the .h files'
+        required: true
+        type: string
+      target-path:
+        description: 'Target path or file for the markdown documentation'
+        required: true
+        type: string
+      exclude-pattern:
+        description: 'Pattern for excluding files (e.g. "*/test/*")'
+        type: string
+      include-cpp:
+        description: 'Include .cpp files'
+        default: false
+        type: boolean
+      access-level:
+        description: 'The minimum access level to be considered in the documentation'
+        default: 'public'
+        type: string
+      show-access-modifiers:
+        description: 'Show access modifiers in the documentation'
+        default: false
+        type: boolean
+      fail-on-warnings:
+        description: 'Fail when documentation warnings are issued.'
+        default: false
+        type: boolean
+      commit:
+        description: 'Boolean flag to indicate whether to commit changes'
+        default: true
+        type: boolean
+      commit-message:
+        description: 'Commit message'
+        default: 'Update documentation'
+        type: string
+      debug:
+        description: 'Enable debugging mode to provide additional output'
+        default: false
+        type: boolean
+
+jobs:
+  render-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install doxygen dependencies
+      shell: bash
+      run: |
+        # Import LLVM GPG key without using apt-key
+        wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /usr/share/keyrings/llvm-archive-keyring.gpg
+
+        # Add the LLVM repository with the GPG keyring
+        echo "deb [signed-by=/usr/share/keyrings/llvm-archive-keyring.gpg] http://apt.llvm.org/focal/ llvm-toolchain-focal-9 main" | sudo tee /etc/apt/sources.list.d/llvm.list > /dev/null
+        
+        # Update the package lists
+        sudo apt-get -qq update
+
+        # Install libclang and other necessary packages
+        sudo apt-get -qq install -y libclang1-9 libclang-cpp9 > /dev/null
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        
+    - name: Install render-docs
+      shell: bash
+      run: npm install github:sebromero/render-docs --no-save --silent
+
+    - name: Cache Doxygen binaries
+      id: cache-doxygen-binaries
+      uses: actions/cache@v4
+      with:
+        path: |
+          node_modules/doxygen/dist
+        key: ${{ runner.os }}-doxygen-binaries-${{ hashFiles('node_modules/doxygen/lib/constants.js') }}
+
+    - name: Run Docs Generation
+      shell: bash
+      run: |
+        npx render-docs \
+          ${{ inputs.source-path }} \
+          ${{ inputs.target-path }} \
+          ${{ inputs.exclude-pattern && format('--exclude {0}', inputs.exclude-pattern) || '' }} \
+          ${{ inputs.include-cpp == true && '--include-cpp' || '' }} \
+          ${{ inputs.show-access-modifiers == true && '--show-access-modifiers' || '' }} \
+          ${{ inputs.access-level && format('--access-level {0}', inputs.access-level) || '' }} \
+          ${{ inputs.fail-on-warnings == true && '--fail-on-warnings' || '' }} \
+          ${{ inputs.debug == true && '--debug ' || '' }}
+
+    - name: Commit Docs
+      if: inputs.commit
+      uses: EndBug/add-and-commit@v9
+      with:
+        add: "${{ inputs.target-path }}"
+        author_name: "GitHub Action"
+        author_email: "action@github.com"
+        message: "${{ inputs.commit-message }}"      
