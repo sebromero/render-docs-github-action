@@ -11,30 +11,25 @@ inputs:
     description: 'Pattern for excluding files (e.g. "*/test/*")'
   include-cpp:
     description: 'Include .cpp files'
-    default: false
-    type: boolean
+    default: 'false'
   access-level:
     description: 'The minimum access level to be considered in the documentation'
     default: 'public'
   show-access-modifiers:
     description: 'Show access modifiers in the documentation'
-    default: false
-    type: boolean
+    default: 'false'
   fail-on-warnings:
     description: 'Fail when documentation warnings are issued.'
-    default: false
-    type: boolean
+    default: 'false'
   commit:
     description: 'Boolean flag to indicate whether to commit changes'
-    default: true
-    type: boolean
+    default: 'true'
   commit-message:
     description: 'Commit message'
     default: 'Update documentation'
   debug:
     description: 'Enable debugging mode to provide additional output'
-    default: false
-    type: boolean
+    default: 'false'
 
 runs:
   using: "composite"
@@ -79,11 +74,11 @@ runs:
         ${{ inputs.source-path }} \
         ${{ inputs.target-path }} \
         ${{ inputs.exclude-pattern && format('--exclude {0}', inputs.exclude-pattern) || '' }} \
-        ${{ inputs.include-cpp == true && '--include-cpp' || '' }} \
-        ${{ inputs.show-access-modifiers == true && '--show-access-modifiers' || '' }} \
+        ${{ inputs.include-cpp == 'true' && '--include-cpp' || '' }} \
+        ${{ inputs.show-access-modifiers == 'true' && '--show-access-modifiers' || '' }} \
         ${{ inputs.access-level && format('--access-level {0}', inputs.access-level) || '' }} \
-        ${{ inputs.fail-on-warnings == true && '--fail-on-warnings' || '' }} \
-        ${{ inputs.debug == true && '--debug ' || '' }}
+        ${{ inputs.fail-on-warnings == 'true' && '--fail-on-warnings' || '' }} \
+        ${{ inputs.debug == 'true' && '--debug ' || '' }}
 
   - name: Commit Docs
     if: inputs.commit
