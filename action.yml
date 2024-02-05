@@ -15,6 +15,9 @@ inputs:
   access-level:
     description: 'The minimum access level to be considered in the documentation'
     default: 'public'
+  show-access-modifiers:
+    description: 'Show access modifiers in the documentation'
+    default: false
   fail-on-warnings:
     description: 'Fail when documentation warnings are issued.'
     default: false
