@@ -45,6 +45,7 @@ jobs:
       with:
         source-path: './src'
         target-path: './docs/api.md'
+        commit: ${{ github.event_name != 'pull_request' }} # Only commit changes if not a PR
 ```
 
 Please note that this workflow only triggers when files are modified that match the given `paths:` pattern. This can be useful to avoid unnecessary workflow runs.
