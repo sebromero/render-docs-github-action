@@ -8,7 +8,7 @@ Rendering the documentation as part of the CI pipeline ensures always up-to-date
 ## 💻 Usage
 
 This Github action can be imported into your own workflow via `uses` property: 
-`- uses: sebromero/render-docs-github-action@main`
+`- uses: arduino/render-docs-github-action@main`
 The minimal arguments that it needs are `source-path` and `target-path`.
 
 Here is a minimal workflow to render documentation in your own repository:
@@ -41,7 +41,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: sebromero/render-docs-github-action@main
+    - uses: arduino/render-docs-github-action@main
       with:
         source-path: './src'
         target-path: './docs/api.md'
@@ -72,7 +72,7 @@ The workflow has a couple of inputs that allows to configure the behaviour:
 
 ## 🐛 Reporting Issues
 
-If you encounter any issue, please open a bug report [here](https://github.com/sebromero/render-docs-github-action/issues). 
+If you encounter any issue, please open a bug report [here](https://github.com/arduino/render-docs-github-action/issues). 
 
 ## 💪 Contributing
 
